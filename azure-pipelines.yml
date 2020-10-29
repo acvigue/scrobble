@@ -1,0 +1,66 @@
+# Xcode
+
+# Build, test, and archive an Xcode workspace on macOS.
+# Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
+
+trigger:
+- main
+
+pool:
+  vmImage: 'macos-10.15'
+
+steps:
+- task: InstallAppleCertificate@2
+  inputs:
+    certSecureFile: '956J7VCH2A.p12'
+    certPwd: '123456'
+    keychain: 'temp'
+    deleteCert: true
+    
+- task: InstallAppleProvisioningProfile@1
+  inputs:
+    provisioningProfileLocation: 'secureFiles'
+    provProfileSecureFile: 'Profile.mobileprovision'
+    removeProfile: true
+
+- task: Npm@1
+  inputs:
+    command: 'install'
+
+- task: CmdLine@2
+  inputs:
+    script: 'npm run build'
+- task: CmdLine@2
+  inputs:
+    script: 'npx cap sync'
+
+- task: CocoaPods@0
+  inputs:
+    workingDirectory: 'ios/App'
+    forceRepoUpdate: false
+
+- task: CmdLine@2
+  inputs:
+    script: "declare -xp"
+
+- task: Xcode@5
+  inputs:
+    actions: 'build'
+    configuration: 'Release'
+    sdk: 'iphoneos'
+    xcWorkspacePath: 'ios/App/App.xcworkspace'
+    scheme: 'App'
+    xcodeVersion: 'specifyPath'
+    xcodeDeveloperDir: '/Applications/Xcode_12.app/Contents/Developer'
+    packageApp: true
+    exportPath: 'output'
+    signingOption: 'manual'
+    signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
+    provisioningProfileUuid: '$(APPLE_PROV_PROFILE_UUID)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'output'
+    ArtifactName: 'release'
+    publishLocation: 'Container'
