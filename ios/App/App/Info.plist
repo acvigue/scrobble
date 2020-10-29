@@ -26,6 +26,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>capacitor</string>
+				<string>scrobble</string>
 			</array>
 		</dict>
 	</array>

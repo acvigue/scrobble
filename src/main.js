@@ -42,5 +42,5 @@ new Vue({
 }).$mount('#app')
 
 NativeApp.addListener("appUrlOpen", (data) => {
-
+  LogRocket.captureMessage('Data - appUrlOpen: '+JSON.stringify(data));
 });
