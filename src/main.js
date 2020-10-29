@@ -47,7 +47,7 @@ new Vue({
       const scopes = "user-read-private user-read-email user-read-playback-state user-read-currently-playing";
       const url = 'https://accounts.spotify.com/authorize' +
       '?response_type=code&code_challenge_method=S256' +
-      '&code_challenge=' + encodeURIComponent(codeChallenge);
+      '&code_challenge=' + encodeURIComponent(codeChallenge) +
       '&client_id=' + "30ff94fb26df46dbab49759ddd32cc1c" +
       (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
       '&redirect_uri=' + encodeURIComponent(redirect_uri);
