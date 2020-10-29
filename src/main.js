@@ -5,6 +5,7 @@ import {Capacitor, Plugins} from "@capacitor/core"
 import './quasar'
 import LogRocket from "logrocket"
 const axios = require("axios").default;
+var CryptoJS = require("crypto-js");
 const qs = require('querystring')
 LogRocket.init("tefu1d/scrobble");
 
@@ -12,12 +13,11 @@ const {Storage, Browser} = Plugins;
 const NativeApp = Plugins.App;
 Vue.config.productionTip = false
 
-async function generateCodeChallenge(codeVerifier) {
-  var digest = await crypto.subtle.digest("SHA-256",
-      new TextEncoder().encode(codeVerifier));
-
-  return btoa(String.fromCharCode(...new Uint8Array(digest)))
-      .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+function generateCodeChallenge(code_verifier) {
+  return code_challenge = base64URL(CryptoJS.SHA256(code_verifier))
+}
+function base64URL(string) {
+  return string.toString(CryptoJS.enc.Base64).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
 }
 
 function generateRandomString(length) {
@@ -42,7 +42,7 @@ new Vue({
       } else {
         redirect_uri = "http://" + window.location.hostname + ":8080/spcallback"
       }
-      const codeVerifier = generateRandomString(64);
+      const codeVerifier = generateRandomString(74);
       const codeChallenge = generateCodeChallenge(codeVerifier);
       const scopes = "user-read-private user-read-email user-read-playback-state user-read-currently-playing";
       const url = 'https://accounts.spotify.com/authorize' +
